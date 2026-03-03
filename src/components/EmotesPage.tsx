@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 
 const emotes = [
@@ -64,6 +65,16 @@ const emotes = [
 ];
 
 export default function EmotesPage({ onBack }: { onBack: () => void }) {
+  const [executed, setExecuted] = useState<Record<string, boolean>>({});
+
+  const handleSend = (id: string) => {
+    setExecuted(prev => ({ ...prev, [id]: true }));
+    // Reset after 2 seconds
+    setTimeout(() => {
+      setExecuted(prev => ({ ...prev, [id]: false }));
+    }, 2000);
+  };
+
   return (
     <div className="min-h-screen bg-[#0B0914] p-4 md:p-8 relative overflow-hidden text-gray-100">
       {/* Background effects */}
@@ -86,8 +97,16 @@ export default function EmotesPage({ onBack }: { onBack: () => void }) {
                 {emote.name}
               </h3>
               
-              <button className="w-full bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white py-2 rounded-lg font-semibold text-sm transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_25px_rgba(168,85,247,0.5)]">
-                Send
+              <button 
+                onClick={() => handleSend(emote.id)}
+                disabled={executed[emote.id]}
+                className={`w-full py-2 rounded-lg font-semibold text-sm transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] ${
+                  executed[emote.id]
+                    ? 'bg-green-500/20 text-green-400 border border-green-500/50 shadow-none cursor-not-allowed'
+                    : 'bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white hover:shadow-[0_0_25px_rgba(168,85,247,0.5)]'
+                }`}
+              >
+                {executed[emote.id] ? "EMOTE EXICUTED" : "Send"}
               </button>
             </div>
           ))}
